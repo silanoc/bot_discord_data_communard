@@ -14,7 +14,7 @@ version : 0.0.1
 import os
 import sys
 # Pour le bon fonctionnement
-import discord
+from discord.ext import commands
 from dotenv import load_dotenv #gére le token dans un fichier à part
 # pour interroger wikidata
 from SPARQLWrapper import SPARQLWrapper, JSON
@@ -22,14 +22,14 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 # indique où est le token
 load_dotenv(dotenv_path = "config")
 
+class DocBot(commands.Bot):
 
-class DocBot(discord.Client):
     def __init__(self):
         super().__init__(command_prefix = "!")
         self.endpoint_url = "https://query.wikidata.org/sparql"
 
     async def on_ready(self):
-        print("Le bot est prêt.")
+        print(f"{self.user.display_name} est prêt. Il est connecté.")
         
     async def on_message(self,message):
         print(message.content)
