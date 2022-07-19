@@ -35,6 +35,7 @@ class DocBot(discord.Client):
         print(message.content)
     
     async def on_message(self,message):
+        print("message", message)
                
         if message.content == "Ping":
             await message.channel.send("Pong")
@@ -42,11 +43,15 @@ class DocBot(discord.Client):
             results = self.get_results(self.requete_tous_les_communards())
             for result in results["results"]["bindings"]:
                 await message.channel.send(result)
+        elif message.content == "?fin":
+            print("fermeture")
+            await self.close()      
         else:
             pass
         
+        
         message_lu = message.content
-        print(message_lu, type(message_lu))
+        #print(message_lu, type(message_lu))
         
         if "?qui:" in message_lu:
             recherche = message_lu[5:]
@@ -58,6 +63,7 @@ class DocBot(discord.Client):
             results = self.get_results(self.requete_une_personne(recherche))
             for result in results["results"]["bindings"]:
                 await message.channel.send(result)
+        
         
             
     def get_results(self, query):
