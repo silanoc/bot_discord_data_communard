@@ -1,16 +1,34 @@
 #!/usr/bin/env python3  
 # -*- coding: utf-8 -*-
 
+from ast import alias
+from asyncio import events
+import sys
 import discord
 from discord.ext import commands
 
 # pour interroger wikidata
 from SPARQLWrapper import SPARQLWrapper, JSON
 
+def setup(bot):
+    bot.add_cog(Cog_Communard_data(bot))
+    
 class Cog_Communard_data(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.endpoint_url = "https://query.wikidata.org/sparql"
+        print("Cog_initialisé")
+        self.test = "test"
+        
+    @commands.command()
+    async def coucou(self, ctx):
+        await ctx.send("Coucou !")
+        await ctx.send("Comment allez vous ?")
+        
+    """async def on_message(self, message):
+        if(message.content.startswith("!ping")):
+            await message.channel.send("Pong")"""
+    
         
     def get_results(self, query):
         """Morceau de code issus de Wikidata Query Service.
@@ -22,6 +40,34 @@ class Cog_Communard_data(commands.Cog):
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
         return sparql.query().convert()
+    
+    
+    async def qui(self,message):
+        message_lu =  message.content
+        print("message", message_lu)
+        
+        
+        recherche = message_lu[5:]
+        if recherche[0] == " ": 
+            recherche = recherche[1:]
+        if recherche[-1] == " ": 
+            recherche = recherche[:-1]
+        print(recherche)
+        results = self.get_results(self.requete_une_personne(recherche))
+        for result in results["results"]["bindings"]:
+            await message.channel.send(result) 
+    
+    #async def communard(self,message):
+    @commands.command(aliases = ['communard'])
+    async def qui_est_communard(self, message):
+        #if(message.content.startswith("!communards")):
+        print('ici')
+        results = self.get_results(self.requete_tous_les_communards())
+        for result in results["results"]["bindings"]:
+            await message.channel.send(result)
+    
+    
+    
     
     def requete_tous_les_communards(self):
         """requete permettant d'avoir la liste de toutes les personnes de wikidata aillant  communard comme occupation"""
@@ -46,23 +92,5 @@ LIMIT 5"""
 LIMIT 100'''
         return query
     
-    async def qui(self,message):
-        message_lu =  message.content
-        print("message", message_lu)
-        
-        
-        recherche = message_lu[5:]
-        if recherche[0] == " ": 
-            recherche = recherche[1:]
-        if recherche[-1] == " ": 
-            recherche = recherche[:-1]
-        print(recherche)
-        results = self.get_results(self.requete_une_personne(recherche))
-        for result in results["results"]["bindings"]:
-            await message.channel.send(result) 
+
     
-    @commands.command()
-    async def communard(self,ctx):
-        results = self.get_results(self.requete_tous_les_communards())
-        for result in results["results"]["bindings"]:
-            await message.channel.send(result)

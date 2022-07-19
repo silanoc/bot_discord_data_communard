@@ -32,12 +32,15 @@ class DocBot(commands.Bot):
         print(f"{self.user.display_name} est prêt. Il est connecté.")
         
     async def on_message(self,message):
+        """Contrôle : affiche tous les messages dans le terminal."""
         print(message.content)
 
     async def on_message(self, message):
+        """simple test de vérification de connection"""
         if(message.content.startswith("!ping")):
             await message.channel.send("Pong")
-            
+        
+        """pour se déconnecter proprement"""    
         if(message.content.startswith("!fin")):
             print("fermeture")
             await self.close()    
@@ -45,4 +48,6 @@ class DocBot(commands.Bot):
 if __name__ == "__main__":
     bot = DocBot()
     #bot.add_cog(communards.Cog_Communard_data(bot))
+    bot.load_extension("ext_communards")
     bot.run(os.getenv("TOKEN"))
+    #communards.Cog_Communard_data.communard()
